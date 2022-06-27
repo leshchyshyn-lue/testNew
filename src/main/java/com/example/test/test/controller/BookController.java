@@ -33,7 +33,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity findById(@PathVariable("id") Long id) throws BookNotFoundException {
+    public ResponseEntity findById(@PathVariable("id") Long id){
         try {
             return ResponseEntity.ok(bookService.findById(id));
         } catch (BookNotFoundException e) {
@@ -45,7 +45,7 @@ public class BookController {
 
     @PutMapping("/{id}/update")
     public ResponseEntity updateBook(@PathVariable("id") Long id,
-                                     @RequestBody Book book) throws BookNotFoundException {
+                                     @RequestBody Book book){
         try {
             return ResponseEntity.ok(bookService.updateBook(id, book));
         } catch (Exception e) {
@@ -76,7 +76,7 @@ public class BookController {
     }
 
     @PutMapping("/{personId}/get/{bookId}")
-    public ResponseEntity getBook(@PathVariable Integer personId, @PathVariable Integer bookId) throws BookNotFoundException {
+    public ResponseEntity getBook(@PathVariable Integer personId, @PathVariable Integer bookId) {
         try {
             return ResponseEntity.ok(bookService.getBook(Long.valueOf(personId), Long.valueOf(bookId)));
         } catch (BookIsBooked e) {
@@ -87,7 +87,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}/put")
-    public ResponseEntity putBook(@PathVariable("id") Long bookId) throws BookNotFoundException {
+    public ResponseEntity putBook(@PathVariable("id") Long bookId)  {
         try {
             bookService.putBook(bookId);
             return ResponseEntity.ok("You have successfully placed the book");
