@@ -36,7 +36,7 @@ public class PersonController {
     }
 
     @GetMapping
-    public ResponseEntity findAllPersons() {
+    public ResponseEntity<?> findAllPersons() {
         try {
             return ResponseEntity.ok(personService.findAllPersons());
         } catch (Exception e) {
@@ -45,9 +45,9 @@ public class PersonController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity updatePerson(@PathVariable("id") Long id,
-                                       @RequestBody Person updatedPerson) {
+    @PutMapping("/{id}")  ////Не добавив ДТО
+    public ResponseEntity<?> updatePerson(@PathVariable("id") Long id,
+                                          @RequestBody Person updatedPerson) {
         try {
             return ResponseEntity.ok(personService.updatePerson(id, updatedPerson));
         } catch (PersonWithThatLastNameAlreadyExists e) {
@@ -59,7 +59,7 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity addPerson(@RequestBody PersonDTO personDTO) {
+    public ResponseEntity<?> addPerson(@RequestBody PersonDTO personDTO) {
         try {
             return ResponseEntity.ok(personService.addPerson(personService.convertToPerson(personDTO)));
         } catch (PersonWithThatLastNameAlreadyExists e) {
@@ -71,7 +71,7 @@ public class PersonController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deletePerson(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deletePerson(@PathVariable("id") Long id) {
         try {
             personService.deletePerson(id);
             return ResponseEntity.ok("Person deleted");

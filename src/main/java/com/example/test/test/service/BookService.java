@@ -1,9 +1,12 @@
 package com.example.test.test.service;
 
+import com.example.test.test.dto.BookDTO;
+import com.example.test.test.dto.PersonDTO;
 import com.example.test.test.entity.Book;
 import com.example.test.test.entity.Person;
 import com.example.test.test.repository.BookRepository;
 import com.example.test.test.util.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +20,13 @@ public class BookService {
 
     private final PersonService personService;
 
+    private final ModelMapper modelMapper;
+
     @Autowired
-    public BookService(BookRepository bookRepository, PersonService personService) {
+    public BookService(BookRepository bookRepository, PersonService personService, ModelMapper modelMapper) {
         this.bookRepository = bookRepository;
         this.personService = personService;
+        this.modelMapper = modelMapper;
     }
 
     public List<Book> findAllBooks() {
@@ -43,7 +49,8 @@ public class BookService {
     }
 
     public Book addBook(Book addedBook) throws BookWithThisNameAlreadyExists {
-        if (bookRepository.findByNameBook(addedBook.getNameBook()) != null) {
+        Book book = bookRepository.findByNameBook(addedBook.getNameBook());
+        if (book != null) {
             throw new BookWithThisNameAlreadyExists("A book with this name already exists");
         }
         return bookRepository.save(addedBook);
@@ -57,12 +64,11 @@ public class BookService {
     public Book getBook(Long personId, Long bookId) throws BookNotFoundException, BookIsBooked, UserNotFoundException {
         Book book = findById(bookId);
         Person person = personService.findById(personId);
-        if (book.isStatus() == false) {
-            book.setPersonId(person);
-            book.setStatus(true);
-        } else {
+        if (book.isStatus()) {
             throw new BookIsBooked("This book is booked");
         }
+        book.setPersonId(person);
+        book.setStatus(true);
         return bookRepository.save(book);
     }
 
@@ -71,13 +77,18 @@ public class BookService {
         if (book == null) {
             throw new BookNotFoundException("No book with this ID was found");
         }
-        if (book.getPersonId() == null){
+        if (book.getPersonId() == null) {
             throw new YouDontHaveThisBook("You don't have this book");
         }
         book.setPersonId(null);
         book.setStatus(false);
         return bookRepository.save(book);
     }
+
+    public Book convertToBook(BookDTO bookDTO) {
+        return modelMapper.map(bookDTO, Book.class);
+    }
+
 
 
 }
