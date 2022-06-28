@@ -37,7 +37,8 @@ public class PersonService {
     }
 
 
-    public Person updatePerson(Long id, Person updatedPerson) throws UserNotFoundException, PersonWithThatLastNameAlreadyExists {
+    public Person updatePerson(Long id, Person updatedPerson)
+            throws UserNotFoundException, PersonWithThatLastNameAlreadyExists {
         Person person = findById(id);
         List<Person> personList = findAllPersons();
         for (Person p : personList) {
@@ -51,10 +52,12 @@ public class PersonService {
         return personRepository.save(person);
     }
 
-    public Person addPerson(Person newPerson) throws PersonWithThatLastNameAlreadyExists {
+    public Person addPerson(Person newPerson)
+            throws PersonWithThatLastNameAlreadyExists {
         Person person = personRepository.findByLastName(newPerson.getLastName());
         if (person != null) {
-            throw new PersonWithThatLastNameAlreadyExists("Person with that last name already exists");
+            throw new PersonWithThatLastNameAlreadyExists
+                    ("Person with that last name already exists");
         }
         return personRepository.save(newPerson);
     }
@@ -67,6 +70,5 @@ public class PersonService {
     public Person convertToPerson(PersonDTO personDTO) {
         return modelMapper.map(personDTO, Person.class);
     }
-
 
 }

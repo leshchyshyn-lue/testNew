@@ -1,7 +1,6 @@
 package com.example.test.test.service;
 
 import com.example.test.test.dto.BookDTO;
-import com.example.test.test.dto.PersonDTO;
 import com.example.test.test.entity.Book;
 import com.example.test.test.entity.Person;
 import com.example.test.test.repository.BookRepository;
@@ -23,7 +22,9 @@ public class BookService {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public BookService(BookRepository bookRepository, PersonService personService, ModelMapper modelMapper) {
+    public BookService(BookRepository bookRepository,
+                       PersonService personService,
+                       ModelMapper modelMapper) {
         this.bookRepository = bookRepository;
         this.personService = personService;
         this.modelMapper = modelMapper;
@@ -41,10 +42,18 @@ public class BookService {
         return book;
     }
 
-    public Book updateBook(Long id, Book updatedBook) throws BookNotFoundException {
+    public Book updateBook(Long id, Book updatedBook)
+            throws BookNotFoundException, BookWithThisNameAlreadyExists {
         Book book = findById(id);
+        List<Book> bookList = findAllBooks();
+        for (Book p : bookList) {
+            String nameBook = p.getNameBook();
+            if (nameBook.equalsIgnoreCase(String.valueOf(updatedBook.getNameBook()))) {
+                throw new BookWithThisNameAlreadyExists("Book with this last name already exists");
+            }
+        }
         book.setNameBook(updatedBook.getNameBook());
-        book.setAutor(updatedBook.getAutor());
+        book.setNameBook(updatedBook.getNameBook());
         return bookRepository.save(book);
     }
 
@@ -61,7 +70,8 @@ public class BookService {
     }
 
 
-    public Book getBook(Long personId, Long bookId) throws BookNotFoundException, BookIsBooked, UserNotFoundException {
+    public Book getBook(Long personId, Long bookId)
+            throws BookNotFoundException, BookIsBooked, UserNotFoundException {
         Book book = findById(bookId);
         Person person = personService.findById(personId);
         if (book.isStatus()) {
@@ -88,7 +98,6 @@ public class BookService {
     public Book convertToBook(BookDTO bookDTO) {
         return modelMapper.map(bookDTO, Book.class);
     }
-
 
 
 }

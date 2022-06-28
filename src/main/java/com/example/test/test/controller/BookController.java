@@ -6,8 +6,9 @@ import com.example.test.test.entity.Book;
 import com.example.test.test.service.BookService;
 import com.example.test.test.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -22,85 +23,43 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAllBooks() {
-        try {
-            return ResponseEntity.ok(bookService.findAllBooks());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public List<Book> findAllBooks() {
+        return bookService.findAllBooks();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") Long id) {
-        try {
-            return ResponseEntity.ok(bookService.findById(id));
-        } catch (BookNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public Book findById(@PathVariable("id") Long id) throws BookNotFoundException {
+        return bookService.findById(id);
     }
 
-    @PutMapping("/{id}/update") ////Не добавив ДТО
-    public ResponseEntity<?> updateBook(@PathVariable("id") Long id,
-                                     @RequestBody Book book) {
-        try {
-            return ResponseEntity.ok(bookService.updateBook(id, book));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    @PutMapping("/{id}/update")
+    public Book updateBook(@PathVariable("id") Long id,
+                           @RequestBody BookDTO bookDTO)
+            throws BookNotFoundException, BookWithThisNameAlreadyExists {
+        return bookService.updateBook(id, bookService.convertToBook(bookDTO));
     }
 
 
     @PostMapping
-    public ResponseEntity<?> addBook(@RequestBody BookDTO bookDTO) {
-        try {
-            return ResponseEntity.ok(bookService.addBook(bookService.convertToBook(bookDTO)));
-        } catch (BookWithThisNameAlreadyExists e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public Book addBook(@RequestBody BookDTO bookDTO) throws BookWithThisNameAlreadyExists {
+        return bookService.addBook(bookService.convertToBook(bookDTO));
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBook(@PathVariable("id") Long id) {
-        try {
-            bookService.deleteBook(id);
-            return ResponseEntity.ok("Book deleted");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public String deleteBook(@PathVariable("id") Long id) {
+        bookService.deleteBook(id);
+        return "Book deleted";
     }
 
-    @PutMapping("/{personId}/get/{bookId}") ////Не добавив ДТО
-    public ResponseEntity<?> getBook(@PathVariable Integer personId, @PathVariable Integer bookId) {
-        try {
-            return ResponseEntity.ok(bookService.getBook(Long.valueOf(personId), Long.valueOf(bookId)));
-        } catch (BookIsBooked e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    @PutMapping("/{personId}/get/{bookId}")
+    public Book getBook(@PathVariable Integer personId, @PathVariable Integer bookId)
+            throws BookIsBooked, UserNotFoundException, BookNotFoundException {
+        return bookService.getBook(Long.valueOf(personId), Long.valueOf(bookId));
     }
 
     @PutMapping("/{id}/put")
-    public ResponseEntity<?> putBook(@PathVariable("id") Long bookId) {
-        try {
-            bookService.putBook(bookId);
-            return ResponseEntity.ok("You have successfully placed the book");
-        } catch (BookNotFoundException | YouDontHaveThisBook e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public Book putBook(@PathVariable("id") Long bookId) throws BookNotFoundException, YouDontHaveThisBook {
+        return bookService.putBook(bookId);
     }
 }
