@@ -7,8 +7,9 @@ import com.example.test.test.service.PersonService;
 import com.example.test.test.util.PersonWithThatLastNameAlreadyExists;
 import com.example.test.test.util.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/person")
@@ -23,62 +24,32 @@ public class PersonController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") Long id) {
-        try {
-            Person person = personService.findById(id);
-            return ResponseEntity.ok(person);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public Person findById(@PathVariable("id") Long id) throws UserNotFoundException {
+        return personService.findById(id);
     }
 
     @GetMapping
-    public ResponseEntity findAllPersons() {
-        try {
-            return ResponseEntity.ok(personService.findAllPersons());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public List<Person> findAllPersons() {
+        return personService.findAllPersons();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updatePerson(@PathVariable("id") Long id,
-                                       @RequestBody Person updatedPerson) {
-        try {
-            return ResponseEntity.ok(personService.updatePerson(id, updatedPerson));
-        } catch (PersonWithThatLastNameAlreadyExists e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public Person updatePerson(@PathVariable("id") Long id,
+                               @RequestBody PersonDTO updatedPersonDTO)
+            throws UserNotFoundException, PersonWithThatLastNameAlreadyExists {
+        return personService.updatePerson(id, personService.convertToPerson(updatedPersonDTO));
     }
 
     @PostMapping
-    public ResponseEntity addPerson(@RequestBody PersonDTO personDTO) {
-        try {
-            return ResponseEntity.ok(personService.addPerson(personService.convertToPerson(personDTO)));
-        } catch (PersonWithThatLastNameAlreadyExists e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public Person addPerson(@RequestBody PersonDTO personDTO)
+            throws PersonWithThatLastNameAlreadyExists {
+        return personService.addPerson(personService.convertToPerson(personDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deletePerson(@PathVariable("id") Long id) {
-        try {
-            personService.deletePerson(id);
-            return ResponseEntity.ok("Person deleted");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Eror");
-        }
+    public String deletePerson(@PathVariable("id") Long id) throws UserNotFoundException {
+        personService.deletePerson(id);
+        return "Person deleted";
     }
 
 
