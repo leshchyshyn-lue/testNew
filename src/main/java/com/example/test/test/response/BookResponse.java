@@ -3,6 +3,8 @@ package com.example.test.test.response;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class BookResponse {
@@ -10,10 +12,12 @@ public class BookResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotNull
+    @NotEmpty(message = "Book name should not be empty")
     @Size(min = 3, max = 30, message = "Name book should be between 3 and 30")
     private String nameBook;
-
+    @NotNull
+    @NotEmpty(message = "author should not be empty")
     @Size(min = 3, max = 30, message = "autor should be between 3 and 30")
     private String autor;
 

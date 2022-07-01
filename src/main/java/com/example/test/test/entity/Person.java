@@ -3,6 +3,7 @@ package com.example.test.test.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
@@ -15,12 +16,13 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
+    @NotNull
     @NotEmpty(message = "First name should not be empty")
     @Size(min = 3, max = 30, message = "First name should be between 3 and 30")
     @Column(name = "first_name")
     private String firstName;
 
+    @NotNull
     @NotEmpty(message = "Last name should not be empty")
     @Size(min = 3, max = 30, message = "Last name should be between 3 and 30")
     @Column(name = "last_name")

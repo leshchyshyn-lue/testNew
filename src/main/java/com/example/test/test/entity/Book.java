@@ -3,6 +3,7 @@ package com.example.test.test.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -13,11 +14,12 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
+    @NotNull
     @Size(min = 3, max = 30, message = "Name book should be between 3 and 30")
     @Column(name = "name")
     private String nameBook;
 
+    @NotNull
     @Size(min = 3, max = 30, message = "autor should be between 3 and 30")
     @Column(name = "autor")
     private String autor;

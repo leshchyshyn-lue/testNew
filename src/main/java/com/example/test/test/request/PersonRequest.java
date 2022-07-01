@@ -1,15 +1,20 @@
 package com.example.test.test.request;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+@Component
 public class PersonRequest {
 
-
+    @NotNull
     @NotEmpty(message = "First name should not be empty")
     @Size(min = 3, max = 30, message = "First name should be between 3 and 30")
     private String firstName;
 
+    @NotNull
     @NotEmpty(message = "Last name should not be empty")
     @Size(min = 3, max = 30, message = "Last name should be between 3 and 30")
     private String lastName;
