@@ -1,12 +1,11 @@
 package com.example.test.test.service;
 
 
-import com.example.test.test.dto.PersonDTO;
 import com.example.test.test.entity.Person;
 import com.example.test.test.repository.PersonRepository;
+import com.example.test.test.request.PersonRequest;
 import com.example.test.test.util.PersonWithThatLastNameAlreadyExists;
 import com.example.test.test.util.UserNotFoundException;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +17,13 @@ import java.util.List;
 public class PersonService {
 
     private final PersonRepository personRepository;
-    private final ModelMapper modelMapper;
+    private final PersonRequest personRequest;
+
 
     @Autowired
-    public PersonService(PersonRepository personRepository, ModelMapper modelMapper) {
+    public PersonService(PersonRepository personRepository, PersonRequest personRequest) {
         this.personRepository = personRepository;
-        this.modelMapper = modelMapper;
+        this.personRequest = personRequest;
     }
 
     public Person findById(Long id) throws UserNotFoundException {
@@ -37,8 +37,7 @@ public class PersonService {
     }
 
 
-    public Person updatePerson(Long id, Person updatedPerson)
-            throws UserNotFoundException, PersonWithThatLastNameAlreadyExists {
+    public Person updatePerson(Long id, Person updatedPerson) throws UserNotFoundException, PersonWithThatLastNameAlreadyExists {
         Person person = findById(id);
         List<Person> personList = findAllPersons();
         for (Person p : personList) {
@@ -52,8 +51,7 @@ public class PersonService {
         return personRepository.save(person);
     }
 
-    public Person addPerson(Person newPerson)
-            throws PersonWithThatLastNameAlreadyExists {
+    public Person addPerson(Person newPerson) throws PersonWithThatLastNameAlreadyExists {
         Person person = personRepository.findByLastName(newPerson.getLastName());
         if (person != null) {
             throw new PersonWithThatLastNameAlreadyExists
@@ -67,8 +65,5 @@ public class PersonService {
         personRepository.deleteById(id);
     }
 
-    public Person convertToPerson(PersonDTO personDTO) {
-        return modelMapper.map(personDTO, Person.class);
-    }
 
 }

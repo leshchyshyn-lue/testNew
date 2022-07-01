@@ -1,8 +1,8 @@
-package com.example.test.test.dto;
+package com.example.test.test.request;
 
 import javax.validation.constraints.Size;
 
-public class BookDTO {
+public class BookRequest {
 
     @Size(min = 3, max = 30, message = "Name book should be between 3 and 30")
     private String nameBook;

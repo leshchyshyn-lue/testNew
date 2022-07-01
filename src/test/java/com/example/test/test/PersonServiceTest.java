@@ -1,58 +1,69 @@
 package com.example.test.test;
 
+
 import com.example.test.test.entity.Person;
+import com.example.test.test.repository.PersonRepository;
 import com.example.test.test.service.PersonService;
 import com.example.test.test.util.PersonWithThatLastNameAlreadyExists;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@RunWith(MockitoJUnitRunner.class)
 public class PersonServiceTest {
-    public PersonServiceTest() {
-
-    }
-
-    private Person person1;
-    private Person person2;
-    private Person person3;
-    @Autowired
+    @InjectMocks //запихаю мок
     private PersonService personService;
+    @Mock // заглушки\мок
+    private PersonRepository personRepository;
 
 
-    @Before
-    public void setUp() {
-        person1 = new Person("firstNameOne", "lastNameOne");
-        person2 = new Person("firstNameTwo", "lastNameTwo");
-        person3 = new Person("firstNameThree", "lastNameThree");
+    private static final String FIRST_NAME = "SomeName";
+    private static final String LAST_NAME = "SomeLastName";
+
+    private static final Long PERSON_ID = 1L;
+
+
+    //Створити персон, set всі поля
+
+    @Test
+    public void testAddPersonSuccess() throws PersonWithThatLastNameAlreadyExists {
+        Person person = new Person();
+        person.setFirstName(FIRST_NAME);
+        person.setLastName(LAST_NAME);
+
+        Person after = new Person();
+        after.setFirstName(FIRST_NAME);
+        after.setLastName(LAST_NAME);
+        after.setId(PERSON_ID);
+
+        when(personRepository.findByLastName(person.getLastName())).thenReturn(null);
+        when(personRepository.save(person)).thenReturn(after);
+
+        Person result = personService.addPerson(person);
+
+        assertEquals(person.getFirstName(), result.getFirstName());
+        assertEquals(person.getLastName(), result.getLastName());
     }
 
     @Test
-    public void checkFindAllAndAddPerson() throws PersonWithThatLastNameAlreadyExists {
-        List<Person> expected = personService.findAllPersons();
+    public void testAddPersonFailWithPersonWithThatLastNameAlreadyExists() {
+        Person person = new Person();
+        person.setFirstName(FIRST_NAME);
+        person.setLastName(LAST_NAME);
 
-        List<Person> actual = new ArrayList<>();
-        for (Person p : expected) {
-            actual.add(p);
-        }
-        actual.add(person1);
-        actual.add(person2);
-        actual.add(person3);
 
-        expected.add(personService.addPerson(person1));
-        expected.add(personService.addPerson(person2));
-        expected.add(personService.addPerson(person3));
+        when(personRepository.findByLastName(person.getLastName())).thenReturn(new Person());
 
-        Assert.assertEquals(expected, actual);
+        //ствердження
+        assertThrows(PersonWithThatLastNameAlreadyExists.class, () -> personService.addPerson(person));
     }
 
+        //ctrl alt o
 
 }

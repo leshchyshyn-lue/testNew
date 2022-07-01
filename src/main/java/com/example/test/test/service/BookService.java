@@ -1,11 +1,9 @@
 package com.example.test.test.service;
 
-import com.example.test.test.dto.BookDTO;
 import com.example.test.test.entity.Book;
 import com.example.test.test.entity.Person;
 import com.example.test.test.repository.BookRepository;
 import com.example.test.test.util.*;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +17,11 @@ public class BookService {
 
     private final PersonService personService;
 
-    private final ModelMapper modelMapper;
 
     @Autowired
-    public BookService(BookRepository bookRepository,
-                       PersonService personService,
-                       ModelMapper modelMapper) {
+    public BookService(BookRepository bookRepository, PersonService personService) {
         this.bookRepository = bookRepository;
         this.personService = personService;
-        this.modelMapper = modelMapper;
     }
 
     public List<Book> findAllBooks() {
@@ -93,10 +87,6 @@ public class BookService {
         book.setPersonId(null);
         book.setStatus(false);
         return bookRepository.save(book);
-    }
-
-    public Book convertToBook(BookDTO bookDTO) {
-        return modelMapper.map(bookDTO, Book.class);
     }
 
 
