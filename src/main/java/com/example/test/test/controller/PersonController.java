@@ -1,14 +1,16 @@
 package com.example.test.test.controller;
 
 
-import com.example.test.test.dto.PersonDTO;
 import com.example.test.test.entity.Person;
+import com.example.test.test.request.PersonRequest;
+import com.example.test.test.response.PersonResponse;
 import com.example.test.test.service.PersonService;
 import com.example.test.test.util.PersonWithThatLastNameAlreadyExists;
 import com.example.test.test.util.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,9 +19,25 @@ public class PersonController {
 
     private final PersonService personService;
 
+
     @Autowired
     public PersonController(PersonService personService) {
         this.personService = personService;
+    }
+
+    public PersonResponse convertToResponse(Person person) {
+        PersonResponse personResponse = new PersonResponse();
+        personResponse.setFirstName(person.getFirstName());
+        personResponse.setLastName(person.getLastName());
+        personResponse.setId(person.getId());
+        return personResponse;
+    }
+
+    public Person convertToPerson(PersonRequest personRequest) {
+        Person person = new Person();
+        person.setFirstName(personRequest.getFirstName());
+        person.setLastName(personRequest.getLastName());
+        return person;
     }
 
 
@@ -34,17 +52,19 @@ public class PersonController {
     }
 
     @PutMapping("/{id}")
-    public Person updatePerson(@PathVariable("id") Long id,
-                               @RequestBody PersonDTO updatedPersonDTO)
-            throws UserNotFoundException, PersonWithThatLastNameAlreadyExists {
-        return personService.updatePerson(id, personService.convertToPerson(updatedPersonDTO));
+    public PersonResponse updatePerson(@PathVariable("id") Long id,
+                                       @RequestBody @Valid PersonRequest personRequest) throws UserNotFoundException, PersonWithThatLastNameAlreadyExists {
+        Person person = personService.updatePerson(id, convertToPerson(personRequest));
+        return convertToResponse(person);
     }
 
     @PostMapping
-    public Person addPerson(@RequestBody PersonDTO personDTO)
-            throws PersonWithThatLastNameAlreadyExists {
-        return personService.addPerson(personService.convertToPerson(personDTO));
+    public PersonResponse addPerson(@RequestBody @Valid PersonRequest personRequest) throws PersonWithThatLastNameAlreadyExists {
+        Person person = personService.addPerson(convertToPerson(personRequest));
+
+        return convertToResponse(person);
     }
+
 
     @DeleteMapping("/{id}")
     public String deletePerson(@PathVariable("id") Long id) throws UserNotFoundException {

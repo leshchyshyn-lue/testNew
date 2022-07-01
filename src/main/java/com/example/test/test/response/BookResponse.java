@@ -1,40 +1,27 @@
-package com.example.test.test.entity;
+package com.example.test.test.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Entity
-@Table(name = "book")
-public class Book {
+public class BookResponse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
     @NotNull
+    @NotEmpty(message = "Book name should not be empty")
     @Size(min = 3, max = 30, message = "Name book should be between 3 and 30")
-    @Column(name = "name")
     private String nameBook;
-
     @NotNull
+    @NotEmpty(message = "author should not be empty")
     @Size(min = 3, max = 30, message = "autor should be between 3 and 30")
-    @Column(name = "autor")
     private String autor;
 
-    @Column(name = "status")
     private boolean status;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id")
-    private Person personId;
-
-    public Book() {
-
-    }
 
 
     public Long getId() {
@@ -67,13 +54,5 @@ public class Book {
 
     public void setStatus(boolean status) {
         this.status = status;
-    }
-
-    public Person getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(Person personId) {
-        this.personId = personId;
     }
 }

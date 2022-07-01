@@ -1,8 +1,9 @@
 package com.example.test.test.controller;
 
 
-import com.example.test.test.dto.BookDTO;
 import com.example.test.test.entity.Book;
+import com.example.test.test.request.BookRequest;
+import com.example.test.test.response.BookResponse;
 import com.example.test.test.service.BookService;
 import com.example.test.test.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,23 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    public BookResponse convertToResponse(Book book) {
+        BookResponse bookResponse = new BookResponse();
+        bookResponse.setNameBook(book.getNameBook());
+        bookResponse.setNameBook(book.getNameBook());
+        bookResponse.setStatus(book.isStatus());
+        bookResponse.setId(book.getId());
+        return bookResponse;
+    }
+
+    public Book convertToBook(BookRequest bookRequest) {
+        Book book = new Book();
+        book.setNameBook(bookRequest.getNameBook());
+        book.setAutor(bookRequest.getAutor());
+        return book;
+    }
+
+
     @GetMapping
     public List<Book> findAllBooks() {
         return bookService.findAllBooks();
@@ -33,16 +51,15 @@ public class BookController {
     }
 
     @PutMapping("/{id}/update")
-    public Book updateBook(@PathVariable("id") Long id,
-                           @RequestBody BookDTO bookDTO)
-            throws BookNotFoundException, BookWithThisNameAlreadyExists {
-        return bookService.updateBook(id, bookService.convertToBook(bookDTO));
+    public BookResponse updateBook(@PathVariable("id") Long id,
+                                   @RequestBody BookRequest bookRequest) throws BookNotFoundException, BookWithThisNameAlreadyExists {
+        return convertToResponse(bookService.updateBook(id, convertToBook(bookRequest)));
     }
 
 
     @PostMapping
-    public Book addBook(@RequestBody BookDTO bookDTO) throws BookWithThisNameAlreadyExists {
-        return bookService.addBook(bookService.convertToBook(bookDTO));
+    public BookResponse addBook(@RequestBody BookRequest bookRequest) throws BookWithThisNameAlreadyExists {
+        return convertToResponse(bookService.addBook(convertToBook(bookRequest)));
     }
 
 
@@ -53,8 +70,7 @@ public class BookController {
     }
 
     @PutMapping("/{personId}/get/{bookId}")
-    public Book getBook(@PathVariable Integer personId, @PathVariable Integer bookId)
-            throws BookIsBooked, UserNotFoundException, BookNotFoundException {
+    public Book getBook(@PathVariable Integer personId, @PathVariable Integer bookId) throws BookIsBooked, UserNotFoundException, BookNotFoundException {
         return bookService.getBook(Long.valueOf(personId), Long.valueOf(bookId));
     }
 
