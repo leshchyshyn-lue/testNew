@@ -3,12 +3,10 @@ package com.example.test.test.service;
 
 import com.example.test.test.entity.Person;
 import com.example.test.test.repository.PersonRepository;
-import com.example.test.test.request.PersonRequest;
 import com.example.test.test.util.PersonWithThatLastNameAlreadyExists;
 import com.example.test.test.util.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 
@@ -17,15 +15,15 @@ import java.util.List;
 public class PersonService {
 
     private final PersonRepository personRepository;
-    private final PersonRequest personRequest;
 
 
     @Autowired
-    public PersonService(PersonRepository personRepository, PersonRequest personRequest) {
+    public PersonService(PersonRepository personRepository) {
         this.personRepository = personRepository;
-        this.personRequest = personRequest;
     }
 
+
+    //ПРотести
     public Person findById(Long id) throws UserNotFoundException {
         return personRepository
                 .findById(id)
@@ -39,15 +37,11 @@ public class PersonService {
 
     public Person updatePerson(Long id, Person updatedPerson) throws UserNotFoundException, PersonWithThatLastNameAlreadyExists {
         Person person = findById(id);
-        List<Person> personList = findAllPersons();
-        for (Person p : personList) {
-            String lastName = p.getLastName();
-            if (lastName.equalsIgnoreCase(String.valueOf(updatedPerson.getLastName()))) {
-                throw new PersonWithThatLastNameAlreadyExists("Person with this last name already exists");
-            }
-        }
         person.setFirstName(updatedPerson.getFirstName());
         person.setLastName(updatedPerson.getLastName());
+        if (personRepository.findByLastName(person.getLastName()) != null) {
+            throw new PersonWithThatLastNameAlreadyExists("Person with this last name already exists");
+        }
         return personRepository.save(person);
     }
 

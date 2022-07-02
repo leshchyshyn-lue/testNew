@@ -28,33 +28,28 @@ public class BookService {
         return bookRepository.findAll();
     }
 
+
+    //ПРотести
     public Book findById(Long id) throws BookNotFoundException {
-        Book book = bookRepository.findById(id).get();
-        if (book == null) {
-            throw new BookNotFoundException("No book with this ID was found");
-        }
-        return book;
+        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("No book with this ID was found"));
     }
 
-    public Book updateBook(Long id, Book updatedBook)
-            throws BookNotFoundException, BookWithThisNameAlreadyExists {
+    public Book updateBook(Long id, Book updatedBook) throws BookNotFoundException, BookWithThisNameAlreadyExists {
         Book book = findById(id);
-        List<Book> bookList = findAllBooks();
-        for (Book p : bookList) {
-            String nameBook = p.getNameBook();
-            if (nameBook.equalsIgnoreCase(String.valueOf(updatedBook.getNameBook()))) {
-                throw new BookWithThisNameAlreadyExists("Book with this last name already exists");
-            }
+        book.setNameBook(updatedBook.getNameBook());
+        book.setAutor(updatedBook.getAutor());
+        if (bookRepository.findByNameBook(book.getNameBook()) != null) {
+            throw new BookWithThisNameAlreadyExists("Book with this last name already exists");
         }
-        book.setNameBook(updatedBook.getNameBook());
-        book.setNameBook(updatedBook.getNameBook());
         return bookRepository.save(book);
+
+
     }
 
     public Book addBook(Book addedBook) throws BookWithThisNameAlreadyExists {
         Book book = bookRepository.findByNameBook(addedBook.getNameBook());
         if (book != null) {
-            throw new BookWithThisNameAlreadyExists("A book with this name already exists");
+            throw new BookWithThisNameAlreadyExists("Book with this name already exists");
         }
         return bookRepository.save(addedBook);
     }
@@ -64,15 +59,13 @@ public class BookService {
     }
 
 
-    public Book getBook(Long personId, Long bookId)
-            throws BookNotFoundException, BookIsBooked, UserNotFoundException {
+    public Book getBook(Long personId, Long bookId) throws BookNotFoundException, BookIsBooked, UserNotFoundException {
         Book book = findById(bookId);
         Person person = personService.findById(personId);
-        if (book.isStatus()) {
+        if (book.getPersonId() != null) {
             throw new BookIsBooked("This book is booked");
         }
         book.setPersonId(person);
-        book.setStatus(true);
         return bookRepository.save(book);
     }
 
@@ -85,7 +78,6 @@ public class BookService {
             throw new YouDontHaveThisBook("You don't have this book");
         }
         book.setPersonId(null);
-        book.setStatus(false);
         return bookRepository.save(book);
     }
 
