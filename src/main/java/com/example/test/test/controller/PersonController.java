@@ -25,7 +25,7 @@ public class PersonController {
         this.personService = personService;
     }
 
-    public PersonResponse convertToResponse(Person person) {
+    private PersonResponse convertToResponse(Person person) {
         PersonResponse personResponse = new PersonResponse();
         personResponse.setFirstName(person.getFirstName());
         personResponse.setLastName(person.getLastName());
@@ -33,7 +33,7 @@ public class PersonController {
         return personResponse;
     }
 
-    public Person convertToPerson(PersonRequest personRequest) {
+    private Person convertToPerson(PersonRequest personRequest) {
         Person person = new Person();
         person.setFirstName(personRequest.getFirstName());
         person.setLastName(personRequest.getLastName());
@@ -42,8 +42,8 @@ public class PersonController {
 
 
     @GetMapping("/{id}")
-    public Person findById(@PathVariable("id") Long id) throws UserNotFoundException {
-        return personService.findById(id);
+    public PersonResponse findById(@PathVariable("id") Long id) throws UserNotFoundException {
+        return convertToResponse(personService.findById(id));
     }
 
     @GetMapping

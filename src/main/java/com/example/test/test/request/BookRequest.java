@@ -1,12 +1,10 @@
 package com.example.test.test.request;
 
-import org.springframework.stereotype.Component;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Component
+
 public class BookRequest {
 
     @NotNull
