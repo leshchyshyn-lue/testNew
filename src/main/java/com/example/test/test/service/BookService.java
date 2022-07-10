@@ -54,7 +54,8 @@ public class BookService {
         return bookRepository.save(addedBook);
     }
 
-    public void deleteBook(Long id) {
+    public void deleteBook(Long id) throws BookNotFoundException {
+        findById(id);
         bookRepository.deleteById(id);
     }
 

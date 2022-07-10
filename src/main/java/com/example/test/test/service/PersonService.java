@@ -23,7 +23,6 @@ public class PersonService {
     }
 
 
-    //ПРотести
     public Person findById(Long id) throws UserNotFoundException {
         return personRepository
                 .findById(id)
@@ -37,11 +36,11 @@ public class PersonService {
 
     public Person updatePerson(Long id, Person updatedPerson) throws UserNotFoundException, PersonWithThatLastNameAlreadyExists {
         Person person = findById(id);
-        person.setFirstName(updatedPerson.getFirstName());
-        person.setLastName(updatedPerson.getLastName());
         if (personRepository.findByLastName(person.getLastName()) != null) {
             throw new PersonWithThatLastNameAlreadyExists("Person with this last name already exists");
         }
+        person.setFirstName(updatedPerson.getFirstName());
+        person.setLastName(updatedPerson.getLastName());
         return personRepository.save(person);
     }
 

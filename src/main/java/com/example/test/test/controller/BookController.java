@@ -64,7 +64,7 @@ public class BookController {
 
 
     @DeleteMapping("/{id}")
-    public String deleteBook(@PathVariable("id") Long id) {
+    public String deleteBook(@PathVariable("id") Long id) throws BookNotFoundException {
         bookService.deleteBook(id);
         return "Book deleted";
     }
